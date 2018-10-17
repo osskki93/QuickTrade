@@ -29,7 +29,7 @@ public class Activity_Login extends AppCompatActivity {
         btnRegistro.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent registro = new Intent(v.getContext(),Activity_Registro.class);
-                startActivityForResult(registro,1);
+                startActivityForResult(registro,0);
             }
         });
 
@@ -44,7 +44,7 @@ public class Activity_Login extends AppCompatActivity {
                 res = comprobarUsuario(inputLogin.getText().toString(), inputPassword.getText().toString());
                 if (res == true) {
                     Intent envio = new Intent(v.getContext(), MainActivity.class);
-                    startActivityForResult(envio, 1);
+                    startActivity(envio);
                 }
             }
         });
@@ -67,6 +67,19 @@ public class Activity_Login extends AppCompatActivity {
         return correcto;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent i) {
+        switch (requestCode) {
+
+            case 0:
+                if (resultCode == RESULT_OK) {
+                    Usuario u1 = i.getExtras().getParcelable("Usuario");
+                    Usuarios.add(u1);
+                } else {
+                    Log.d("Testa", "Fallo en la vuelta del Activity");
+                }
+        }
+    }
 
 
 

@@ -1,6 +1,7 @@
 package com.example.oscar.app1pm;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,8 +21,9 @@ public class Activity_Registro extends AppCompatActivity {
         final Button btnCancelar = (Button) findViewById(R.id.botonCancelar);
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent cancelar = new Intent(v.getContext(), Activity_Login.class);
-                startActivityForResult(cancelar, 1);
+                Intent i = new Intent();
+                setResult(RESULT_CANCELED, i);
+                finish();
             }
         });
 
@@ -32,11 +34,14 @@ public class Activity_Registro extends AppCompatActivity {
                 Usuario usuario1 = guardarUsuario();
                 if (usuario1 != null) {
                     Intent i = new Intent();
-                    i.putExtra;
-                    setResult(RESULT_OK);
+                    i.putExtra("Usuario", usuario1);
+                    setResult(RESULT_OK, i);
+                    finish();
                 }
                 else{
-                    setResult(RESULT_CANCELED);
+                    Intent i = new Intent();
+                    setResult(RESULT_CANCELED, i);
+                    finish();
                 }
             }
         });
@@ -84,7 +89,8 @@ public class Activity_Registro extends AppCompatActivity {
             Usuario u1 = new Usuario(Integer.parseInt(inputUserID.getText().toString()), inputNom.getText().toString(), inputCognoms.getText().toString(), inputEmail.getText().toString(), inputPassword.getText().toString(), inputTelefon.getText().toString());
             return u1;
         }
-
-        return null;
+        else {
+            return null;
+        }
     }
 }
