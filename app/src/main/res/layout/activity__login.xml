@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titolActivitat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Quick Trade"
+        android:textSize="20dp"
+        android:layout_marginTop="30dp"/>
+
+    <EditText
+        android:id="@+id/inputLogin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="Login:"
+        android:layout_marginTop="60dp"/>
+
+    <EditText
+        android:id="@+id/inputPassword"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="Password:"
+        android:inputType="textPassword"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="2dp"
+        android:layout_weight="4"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/botonEnviar"
+            android:layout_width="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_weight="1"
+            android:text="ENVIAR"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="60dp"/>
+
+        <Button
+            android:id="@+id/botonRegistrar"
+            android:layout_width="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_weight="1"
+            android:text="REGISTRAR"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
