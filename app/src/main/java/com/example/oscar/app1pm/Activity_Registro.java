@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,8 +17,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class Activity_Registro extends AppCompatActivity {
 
@@ -61,7 +65,7 @@ public class Activity_Registro extends AppCompatActivity {
                 String email = inputEmail.getText().toString();
                 String password = inputPassword.getText().toString();
 
-                registro(email,password);
+                comprobar(inputNombreUsuario.getText().toString());
                 setResult(RESULT_OK);
             }
         });
@@ -90,7 +94,7 @@ public class Activity_Registro extends AppCompatActivity {
 
     }
 
-    private Usuario guardarUsuario() {
+    private Usuario guardarUsuario(FirebaseUser user) {
 
         if (comprobarCampos() == true) {
             EditText inputNombreUsuario = (EditText) findViewById(R.id.inputNombreUsuario);
@@ -99,7 +103,8 @@ public class Activity_Registro extends AppCompatActivity {
             EditText inputEmail = (EditText) findViewById(R.id.inputEmail);
             EditText inputPassword = (EditText) findViewById(R.id.inputPassword);
             EditText inputDireccion = (EditText) findViewById(R.id.inputDireccion);
-            Usuario u1 = new Usuario(inputNombreUsuario.getText().toString(), inputNombre.getText().toString(), inputApellidos.getText().toString(), inputDireccion.getText().toString());
+            Usuario u1 = new Usuario(inputNombreUsuario.getText().toString(), inputNombre.getText().toString(), inputApellidos.getText().toString(), inputDireccion.getText().toString(), user.getUid());
+            bbdd.child(user.getUid()).setValue(u1);
             return u1;
         }
 
@@ -121,9 +126,9 @@ public class Activity_Registro extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            Usuario u1 = new Usuario(nombreUsuario, nombre, apellidos, direccion);
-
                             String clave = bbdd.push().getKey();
+
+                            Usuario u1 = new Usuario(nombreUsuario, nombre, apellidos, direccion, clave);
 
                             bbdd.child(clave).setValue(u1);
 
@@ -142,10 +147,37 @@ public class Activity_Registro extends AppCompatActivity {
                 });
     }
 
-    private boolean comprobarNombreUsario(){
+    boolean res;
+    private void comprobar(final String inputNombreUsuario) {
 
+        res = false;
+        Query q = bbdd.orderByChild("nombreUsuario");
 
-        return true;
+        q.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot i: dataSnapshot.getChildren()) {
+                    Usuario u = i.getValue(Usuario.class);
+                    Log.d("Hola","Comprobando " + u.getNombreUsuario() + " con " + inputNombreUsuario + " y da: " + u.getNombreUsuario().compareToIgnoreCase(inputNombreUsuario));
+                    if (u.getNombreUsuario().compareToIgnoreCase(inputNombreUsuario) == 0) {
+                        res = true;
+                    }
+                }
+                if(comprobarCampos() && !res) {
+                    registro(inputEmail.getText().toString(),inputPassword.getText().toString());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Revise que todos los campos estén rellenados, y si es así cambie el nombre de usuario dado que ese ya existe", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
+
+
 
 }

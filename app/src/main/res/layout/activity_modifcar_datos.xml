@@ -38,23 +38,6 @@
         android:layout_weight="1"
         android:hint="Apellidos: "/>
 
-    <EditText
-        android:id="@+id/inputEmail"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:ems="10"
-        android:hint="E-mail: "
-        android:enabled="false"/>
-
-    <EditText
-        android:id="@+id/inputPassword"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:hint="Password: "
-        android:inputType="textPassword"
-        android:enabled="false"/>
 
     <EditText
         android:id="@+id/inputDireccion"
