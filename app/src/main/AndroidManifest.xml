@@ -18,7 +18,14 @@
         </activity>
         <activity android:name=".Activity_Registro" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".ModifcarDatos"></activity>
+        <activity android:name=".ModifcarDatos" />
+        <activity android:name=".AnyadirProducto" />
+        <activity android:name=".AdaptadorRecyclerProductos" />
+        <activity android:name=".DetalleProductoActivity" />
+        <activity android:name=".FavoritosActivity" />
+        <activity android:name=".AdaptadorRecyclerUsuarios" />
+        <activity android:name=".ListaUsuarios" />
+        <activity android:name=".DetalleUsuarioActivity"></activity>
     </application>
 
 </manifest>

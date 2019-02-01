@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,56 +16,55 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class ModifcarDatos extends AppCompatActivity{
+public class ModifcarDatos extends AppCompatActivity implements View.OnClickListener {
 
+    private EditText txtNombre;
+    private EditText txtApellidos;
+    private EditText txtDireccion;
+    private EditText txtNombreUsuario;
+    private Button btnGuardar;
+    private Button btnCancelar;
 
-    private EditText inputNombreUsuario;
-    private EditText inputNombre;
-    private EditText inputApellidos;
-    private EditText inputDireccion;
-    private Button botonCancelar;
-    private Button botonAcceptar;
+    private Usuario usuarioActual;
 
-    private Usuario usuario;
-
-    DatabaseReference bbdd;
+    DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifcar_datos);
 
-        bbdd = FirebaseDatabase.getInstance().getReference("usuarios");
-        usuario = getIntent().getParcelableExtra("Usuario");
-        if(usuario == null) {
-            Log.d("Oscar", "El usuario está vacío");
-        } else {
-            Log.d("Oscar", "El usuario es: " + usuario.getNombreUsuario());
-        }
+        database = FirebaseDatabase.getInstance().getReference("usuarios");
+        usuarioActual = getIntent().getParcelableExtra("Usuario");
 
-        inputNombreUsuario = findViewById(R.id.inputNombreUsuario);
-        inputNombre = findViewById(R.id.inputNombre);
-        inputApellidos = findViewById(R.id.inputApellidos);
-        inputDireccion = findViewById(R.id.inputDireccion);
-        botonCancelar = findViewById(R.id.botonCancelar);
-        botonAcceptar = findViewById(R.id.botonAcceptar);
+        txtNombre = findViewById(R.id.txtNombre);
+        txtNombreUsuario = findViewById(R.id.txtNombreUsuario);
+        txtApellidos = findViewById(R.id.txtApellidos);
+        txtDireccion = findViewById(R.id.txtDireccion);
+        btnGuardar = findViewById(R.id.btnGuardar);
+        btnCancelar = findViewById(R.id.btnCancelar);
 
+        btnGuardar.setOnClickListener(this);
+        btnCancelar.setOnClickListener(this);
+        txtNombreUsuario.setText(usuarioActual.getNombreUsuario());
+        txtNombre.setText(usuarioActual.getNombre());
+        txtApellidos.setText(usuarioActual.getApellidos());
+        txtDireccion.setText(usuarioActual.getDireccion());
 
-        inputNombreUsuario.setText(usuario.getNombreUsuario());
-        inputNombre.setText(usuario.getNombre());
-        inputApellidos.setText(usuario.getApellidos());
-        inputDireccion.setText(usuario.getDireccion());
+    }
 
-        botonAcceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Query q = bbdd.orderByChild("id").equalTo(usuario.getId());
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnGuardar:
+                actualizarUsuarioActual();
+                Query q = database.orderByChild("userID").equalTo(usuarioActual.getUserID());
                 q.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        bbdd.child(usuario.getId()).setValue(usuario);
+                        database.child(usuarioActual.getUserID()).setValue(usuarioActual);
                         Intent i = new Intent();
-                        i.putExtra("Usuario", usuario);
+                        i.putExtra("Usuario", usuarioActual);
                         setResult(RESULT_OK, i);
                         finish();
                     }
@@ -77,23 +75,17 @@ public class ModifcarDatos extends AppCompatActivity{
                         finish();
                     }
                 });
-            }
-        });
-
-        botonCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.btnCancelar:
                 setResult(RESULT_CANCELED);
                 finish();
-            }
-        });
+                break;
+        }
     }
 
-
-
-    private void actualizar() {
-        usuario.setNombre(inputNombre.getText().toString());
-        usuario.setApellidos(inputApellidos.getText().toString());
-        usuario.setDireccion(inputDireccion.getText().toString());
+    private void actualizarUsuarioActual() {
+        usuarioActual.setNombre(txtNombre.getText().toString());
+        usuarioActual.setApellidos(txtApellidos.getText().toString());
+        usuarioActual.setDireccion(txtDireccion.getText().toString());
     }
 }

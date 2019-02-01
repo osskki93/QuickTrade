@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.oscar.app1pm.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -18,12 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Activity_Login extends AppCompatActivity {
-
-    private ArrayList<Usuario> Usuarios;
-    EditText inputLogin;
-    EditText inputPassword;
+    private EditText email;
+    private EditText password;
     private FirebaseAuth mAuth;
 
     @Override
@@ -31,7 +29,7 @@ public class Activity_Login extends AppCompatActivity {
         super.onStart();
         mAuth.signOut();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser!=null) {
+        if(currentUser != null) {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);
         }
@@ -44,42 +42,40 @@ public class Activity_Login extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        final Button btnRegistro = (Button) findViewById(R.id.botonRegistrar);
-        btnRegistro.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        // Inicializamos los botones y campos de texto que vamos a necesitar de la vista
+        final Button btnLogin = (Button) findViewById(R.id.btnLogin);
+        final Button btnRegistrar = (Button) findViewById(R.id.btnRegistrar);
+        email = (EditText)findViewById(R.id.txtUsuario);
+        password = (EditText)findViewById(R.id.txtPassword);
 
+        // Listener del botón "btnLogin"
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                loginUsuario();
+            }
+        });
+
+        // Listener del botón "btnRegistrar"
+        btnRegistrar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), Activity_Registro.class);
-                startActivity(i);
-
+                startActivityForResult(i, 0);
             }
         });
+    }
 
-        final Button btnEnviar = (Button) findViewById(R.id.botonEnviar);
-        btnEnviar.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                EditText inputLogin = (EditText) findViewById(R.id.inputLogin);
-                EditText inputPassword = (EditText) findViewById(R.id.inputPassword);
-                comprobarUsuario();
-
-            }
-        });
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent i) {
 
     }
 
-    private void comprobarUsuario() {
-
-        EditText inputLogin = (EditText) findViewById(R.id.inputLogin);
-        EditText inputPassword = (EditText) findViewById(R.id.inputPassword);
-
+    private void loginUsuario() {
         // Comprobamos que ninguno de los campos sea una cadena vacia, en caso de serlo devolvemos false;
-        if((inputLogin.getText().toString().isEmpty()) || (inputPassword.getText().toString().isEmpty())) {
-            Log.d("Hola","Hola");
+        if((email.getText().toString().compareTo("") == 0) || (password.getText().toString().compareTo("") == 0)) {
             // Alguna cadena vacía
             Toast.makeText(getApplicationContext(), "ERROR: Revisa los campos.", Toast.LENGTH_SHORT).show();
         } else {
-            mAuth.signInWithEmailAndPassword(inputLogin.getText().toString(), inputPassword.getText().toString())
+            mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -92,10 +88,6 @@ public class Activity_Login extends AppCompatActivity {
                             }
                         }
                     });
-        }}
-
-
-
-
-
+        }
+    }
 }

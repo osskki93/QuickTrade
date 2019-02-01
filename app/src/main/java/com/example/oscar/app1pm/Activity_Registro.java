@@ -26,147 +26,67 @@ import com.google.firebase.database.ValueEventListener;
 public class Activity_Registro extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private EditText inputNombreUsuario;
-    private EditText inputNombre;
-    private EditText inputApellidos;
-    private EditText inputEmail;
-    private EditText inputPassword;
-    private EditText inputDireccion;
+    DatabaseReference database;
 
-    DatabaseReference bbdd;
+    EditText nombreUsuario;
+    EditText nombre;
+    EditText apellidos;
+    EditText email;
+    EditText password;
+    EditText direccion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity__registro);
 
-        inputNombreUsuario = (EditText) findViewById(R.id.inputNombreUsuario);
-        inputNombre = (EditText) findViewById(R.id.inputNombre);
-        inputApellidos = (EditText) findViewById(R.id.inputApellidos);
-        inputEmail = (EditText) findViewById(R.id.inputEmail);
-        inputPassword = (EditText) findViewById(R.id.inputPassword);
-        inputDireccion = (EditText) findViewById(R.id.inputDireccion);
+        final Button btnCancelar = (Button) findViewById(R.id.btnCancelar);
+        final Button btnGuardar = (Button) findViewById(R.id.btnGuardar);
+        nombreUsuario = (EditText) findViewById(R.id.txtNombreUsuario);
+        nombre = (EditText) findViewById(R.id.txtNombre);
+        apellidos = (EditText) findViewById(R.id.txtApellidos);
+        email = (EditText) findViewById(R.id.txtEmail);
+        password = (EditText) findViewById(R.id.txtPassword);
+        direccion = (EditText) findViewById(R.id.txtDireccion);
 
-
-        bbdd = FirebaseDatabase.getInstance().getReference("usuarios");
-
-        final Button btnCancelar = (Button) findViewById(R.id.botonCancelar);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent cancelar = new Intent(v.getContext(), Activity_Login.class);
-                startActivityForResult(cancelar, 1);
-            }
-        });
-
-        final Button btnAcceptar = (Button) findViewById(R.id.botonAcceptar);
-        btnAcceptar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                String email = inputEmail.getText().toString();
-                String password = inputPassword.getText().toString();
-
-                comprobar(inputNombreUsuario.getText().toString());
-                setResult(RESULT_OK);
-            }
-        });
-
-    }
-
-    private boolean comprobarCampos() {
-
-        boolean relleno = false;
-
-        if (inputNombreUsuario.getText().toString() != "") {
-            if(inputNombre.getText().toString() != ""){
-                if (inputApellidos.getText().toString() != ""){
-                    if(inputEmail.getText().toString() != ""){
-                        if(inputPassword.getText().toString() != ""){
-                            if(inputDireccion.getText().toString() != ""){
-                                relleno = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return relleno;
-
-
-    }
-
-    private Usuario guardarUsuario(FirebaseUser user) {
-
-        if (comprobarCampos() == true) {
-            EditText inputNombreUsuario = (EditText) findViewById(R.id.inputNombreUsuario);
-            EditText inputNombre = (EditText) findViewById(R.id.inputNombre);
-            EditText inputApellidos = (EditText) findViewById(R.id.inputApellidos);
-            EditText inputEmail = (EditText) findViewById(R.id.inputEmail);
-            EditText inputPassword = (EditText) findViewById(R.id.inputPassword);
-            EditText inputDireccion = (EditText) findViewById(R.id.inputDireccion);
-            Usuario u1 = new Usuario(inputNombreUsuario.getText().toString(), inputNombre.getText().toString(), inputApellidos.getText().toString(), inputDireccion.getText().toString(), user.getUid());
-            bbdd.child(user.getUid()).setValue(u1);
-            return u1;
-        }
-
-        return null;
-    }
-
-    private void registro(String email, String password){
 
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference("usuarios");
 
-        final String nombreUsuario = inputNombreUsuario.getText().toString();
-        final String nombre = inputNombre.getText().toString();
-        final String apellidos = inputApellidos.getText().toString();
-        final String direccion = inputDireccion.getText().toString();
+        // Listener del botón "btnCancelar"
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED); // Manda un 0.
+                finish();
+            }
+        });
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-
-                            String clave = bbdd.push().getKey();
-
-                            Usuario u1 = new Usuario(nombreUsuario, nombre, apellidos, direccion, clave);
-
-                            bbdd.child(clave).setValue(u1);
-
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(Activity_Registro.this, "Autenticación con éxito", Toast.LENGTH_SHORT).show();
-                            setResult(RESULT_OK);
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(Activity_Registro.this, "La autenticación no ha podido realizarse: " + task.getException(), Toast.LENGTH_LONG).show();
-                        }
-
-                        // ...
-                    }
-                });
+        // Listener del botón "btnGuardar"
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                registrarUsuario(nombreUsuario.getText().toString());
+            }
+        });
     }
 
     boolean res;
-    private void comprobar(final String inputNombreUsuario) {
-
+    private void registrarUsuario(final String nombreUsuario) {
         res = false;
-        Query q = bbdd.orderByChild("nombreUsuario");
+        Query q = database.orderByChild("nombreUsuario");
 
         q.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot i: dataSnapshot.getChildren()) {
                     Usuario u = i.getValue(Usuario.class);
-                    Log.d("Hola","Comprobando " + u.getNombreUsuario() + " con " + inputNombreUsuario + " y da: " + u.getNombreUsuario().compareToIgnoreCase(inputNombreUsuario));
-                    if (u.getNombreUsuario().compareToIgnoreCase(inputNombreUsuario) == 0) {
+                    if (u.getNombreUsuario().compareToIgnoreCase(nombreUsuario) == 0) {
                         res = true;
                     }
                 }
                 if(comprobarCampos() && !res) {
-                    registro(inputEmail.getText().toString(),inputPassword.getText().toString());
+                    introducirUsuario();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Revise que todos los campos estén rellenados, y si es así cambie el nombre de usuario dado que ese ya existe", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "ERROR: Comprueba los campos, o el nombre de usuario ya existe.", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -178,6 +98,47 @@ public class Activity_Registro extends AppCompatActivity {
         });
     }
 
+    private void introducirUsuario() {
 
+        EditText email = (EditText) findViewById(R.id.txtEmail);
+        EditText password = (EditText) findViewById(R.id.txtPassword);
+
+
+        mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Usuario creado con éxito.", Toast.LENGTH_SHORT).show();
+                            introducirDatos(mAuth.getCurrentUser());
+                            mAuth.getInstance().signOut();
+                            setResult(RESULT_OK); // Manda un -1
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
+                            setResult(RESULT_FIRST_USER); // Manda un 1
+                            finish();
+                        }
+                    }
+                });
+    }
+
+    private boolean comprobarCampos() {
+        if(nombre.getText().toString().compareTo("") == 0 ||
+                nombreUsuario.getText().toString().compareTo("") == 0 ||
+                apellidos.getText().toString().compareTo("") == 0 ||
+                email.getText().toString().compareTo("") == 0 ||
+                password.getText().toString().compareTo("") == 0 ||
+                direccion.getText().toString().compareTo("") == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void introducirDatos(FirebaseUser user) {
+        Usuario usuario = new Usuario(nombreUsuario.getText().toString(), nombre.getText().toString(), apellidos.getText().toString(), direccion.getText().toString(), user.getUid());
+        database.child(user.getUid()).setValue(usuario);
+    }
 
 }
