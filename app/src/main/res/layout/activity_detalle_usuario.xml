@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lblNombreUsuario"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="iPhone 7 Plus 128Gb Negro"
+                android:textColor="#00b7f4"
+                android:textSize="21dp"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Informática"
+            android:textSize="18dp"
+            android:textColor="#0072f4"/>
+
+        <TextView
+            android:id="@+id/lblApellidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Movil nuevo con poco uso, lo vendo para poder comprarme el iPhone X que me gusta más y va mejor, no compres este, es una mierda." />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnSalir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SALIR" />
+
+        <CheckBox
+            android:id="@+id/cbFavorito"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Seguir"/>
+
+    </LinearLayout>
+
+</LinearLayout>
